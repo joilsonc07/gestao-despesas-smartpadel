@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>Gestão de Despesas · Smart Padel</title>
+  <meta name="description" content="Lançar despesas, acompanhar o painel e pedir, aprovar e pagar. Acesso restrito, com entrada por e-mail e código.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Prévia do link no WhatsApp e em outros aplicativos -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Smart Padel">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Gestão de Despesas · Smart Padel">
+  <meta property="og:description" content="Lançar despesas, acompanhar o painel e pedir, aprovar e pagar. Acesso restrito, com entrada por e-mail e código.">
+  <meta property="og:url" content="https://joilsonc07.github.io/gestao-despesas-smartpadel/">
+  <meta property="og:image" content="https://joilsonc07.github.io/gestao-despesas-smartpadel/previa.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Gestão de Despesas · Smart Padel">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Atalho na tela inicial do celular -->
+  <meta name="theme-color" content="#0F2530">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Despesas">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <style>
+    html, body { margin: 0; height: 100%; background: #0F2530; }
+    #app { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #F7FAF9; }
+    #espera { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+              color: #C9D8D5; font: 16px -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+    noscript { display: block; padding: 24px; color: #fff; font: 16px Arial, sans-serif; }
+    noscript a { color: #59D1C0; }
+  </style>
+</head>
+<body>
+  <div id="espera">Abrindo…</div>
+  <iframe id="app" title="Gestão de Despesas · Smart Padel" allow="clipboard-write" referrerpolicy="no-referrer"></iframe>
+  <noscript>Este aplicativo precisa de JavaScript.
+    <a href="https://script.google.com/macros/s/AKfycbwYbPlGdHi4AzD9f_Xs4qnQ_Kwn4YXtoPxwLSGZNfGNkbPJ4kFH43LvKoPTIjT6plbz/exec">Abrir pelo endereço direto</a>.</noscript>
+  <script>
+    // Esta página é só a moldura: mostra o aplicativo, que roda no Google. Nenhum dado fica aqui.
+    // Só os parâmetros conhecidos seguem adiante; nada sigiloso passa pelo endereço.
+    (function () {
+      var BASE = 'https://script.google.com/macros/s/AKfycbwYbPlGdHi4AzD9f_Xs4qnQ_Kwn4YXtoPxwLSGZNfGNkbPJ4kFH43LvKoPTIjT6plbz/exec';
+      var q = new URLSearchParams(location.search);
+      var pagina = q.get('page') || '', n = q.get('n') || '';
+      var partes = [];
+      if (['lancamento', 'painel', 'sp', 'sp_doc'].indexOf(pagina) > -1) partes.push('page=' + pagina);
+      if (/^[A-Za-z0-9-]{1,30}$/.test(n)) partes.push('n=' + n);
+      var quadro = document.getElementById('app');
+      quadro.addEventListener('load', function () { document.getElementById('espera').style.display = 'none'; });
+      quadro.src = BASE + (partes.length ? '?' + partes.join('&') : '');
+    })();
+  </script>
+</body>
+</html>
