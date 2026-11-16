@@ -45,17 +45,47 @@
   <noscript>Este aplicativo precisa de JavaScript.
     <a href="https://script.google.com/macros/s/AKfycbwYbPlGdHi4AzD9f_Xs4qnQ_Kwn4YXtoPxwLSGZNfGNkbPJ4kFH43LvKoPTIjT6plbz/exec">Abrir pelo endereço direto</a>.</noscript>
   <script>
-    // Esta página é só a moldura: mostra o aplicativo, que roda no Google. Nenhum dado fica aqui.
+    // Esta página é a moldura: mostra o aplicativo, que roda no Google. Nenhum dado do aplicativo fica aqui.
     // Só os parâmetros conhecidos seguem adiante; nada sigiloso passa pelo endereço.
+    //
+    // PONTE DE SESSÃO (v11.4, 16/11/2026). O Safari do iPhone apaga o que uma moldura guarda quando a
+    // página fecha, e o aplicativo pedia código a cada abertura. Por isso esta página guarda, neste
+    // aparelho, a chave da sessão que o aplicativo entrega, e a devolve quando ele abre. A chave não
+    // identifica ninguém por si: o servidor confere a sessão e o cadastro a cada chamada, e "Sair" a apaga.
+    // Só é atendida mensagem que vem de dentro da moldura desta página e de endereço de aplicativo do Google.
     (function () {
       var BASE = 'https://script.google.com/macros/s/AKfycbwYbPlGdHi4AzD9f_Xs4qnQ_Kwn4YXtoPxwLSGZNfGNkbPJ4kFH43LvKoPTIjT6plbz/exec';
+      var ORIGEM_APP = /^https:\/\/[a-z0-9-]+-script\.googleusercontent\.com$/;
+      var CHAVE = 'sp_sessao', RX_SES = /^[a-f0-9]{64}$/;
       var q = new URLSearchParams(location.search);
       var pagina = q.get('page') || '', n = q.get('n') || '';
       var partes = [];
-      if (['lancamento', 'painel', 'sp', 'sp_doc'].indexOf(pagina) > -1) partes.push('page=' + pagina);
+      if (['lancamento', 'painel', 'sp', 'sp_doc', 'professores'].indexOf(pagina) > -1) partes.push('page=' + pagina);
       if (/^[A-Za-z0-9-]{1,30}$/.test(n)) partes.push('n=' + n);
       var quadro = document.getElementById('app');
       quadro.addEventListener('load', function () { document.getElementById('espera').style.display = 'none'; });
+
+      function ler() { try { var v = localStorage.getItem(CHAVE) || ''; return RX_SES.test(v) ? v : ''; } catch (e) { return ''; } }
+      // A janela que mandou a mensagem está dentro da moldura desta página? (o aplicativo fica até 3 níveis abaixo)
+      function daMoldura(w) {
+        var fila = [], i, j, x;
+        try { fila.push([quadro.contentWindow, 0]); } catch (e) { return false; }
+        for (i = 0; i < fila.length && i < 40; i++) {
+          x = fila[i];
+          if (x[0] === w) return true;
+          if (x[1] >= 4) continue;
+          try { for (j = 0; j < x[0].length && j < 8; j++) fila.push([x[0][j], x[1] + 1]); } catch (e) { /* segue */ }
+        }
+        return false;
+      }
+      window.addEventListener('message', function (ev) {
+        var d = ev.data;
+        if (!d || d.sp !== 'sessao' || !ORIGEM_APP.test(ev.origin) || !ev.source || !daMoldura(ev.source)) return;
+        if (d.acao === 'ler') { try { ev.source.postMessage({ sp: 'sessao', acao: 'valor', sessao: ler() }, ev.origin); } catch (e) { /* sem resposta */ } return; }
+        if (d.acao === 'guardar' && RX_SES.test(String(d.sessao || ''))) { try { localStorage.setItem(CHAVE, d.sessao); } catch (e) { /* aparelho sem guarda */ } return; }
+        if (d.acao === 'esquecer') { try { localStorage.removeItem(CHAVE); } catch (e) { /* nada a apagar */ } }
+      });
+
       quadro.src = BASE + (partes.length ? '?' + partes.join('&') : '');
     })();
   </script>
